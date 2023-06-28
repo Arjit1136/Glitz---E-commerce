@@ -27,7 +27,7 @@ const ProductForm = ({ product }) => {
         item.quantity === quantity
     )
     setInCart(inCart)
-  }, [size, quantity, user.cart, product._id])
+  }, [size, quantity, product._id])
 
   useEffect(() => {
     const updateOptions = () => {
