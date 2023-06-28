@@ -46,7 +46,7 @@ const ProductForm = ({ product }) => {
       }
     }
     updateOptions()
-  }, [size, product.inStock])
+  }, [size])
 
   const handleAddToCart = async () => {
     try {
