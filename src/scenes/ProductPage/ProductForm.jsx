@@ -8,22 +8,22 @@ const ProductForm = ({ product }) => {
   const [quantity, setQuantity] = useState(1)
   const [clickedButton, setClickedButton] = useState('S')
   const [options, setOptions] = useState([])
-  const { name,price } = product
+  const { name, price } = product
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
   const token = useSelector((state) => state.token)
-  const inWishlist = user?.wishlist.some((item) => item === product._id) || false
+  const wishlist = user?.wishList || []
+  const inWishlist = wishlist.some((item) => item === product._id) || false
   // const [inCart, setInCart] = useState(false)
-
- 
-    const inCart = user?.cart.some(
+  const cart=user?.cart || []
+  const inCart =
+    cart.some(
       (item) =>
         item.productId === product._id &&
         item.size === size.toLowerCase() && // Convert size to lowercase
         item.quantity === quantity
     ) || false
-    
 
   useEffect(() => {
     const updateOptions = () => {
@@ -46,14 +46,15 @@ const ProductForm = ({ product }) => {
 
   const handleAddToCart = async () => {
     try {
-      if(user===null){
+      if (user === null) {
         navigate('/user')
-      }
-      else if (inCart) {
+      } else if (inCart) {
         navigate(`/user/cart/${user._id}`)
       } else {
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/user/cart/add/${user?._id}/${product._id}`,
+          `${import.meta.env.VITE_BASE_URL}/user/cart/add/${user?._id}/${
+            product._id
+          }`,
           {
             method: 'PATCH',
             headers: {
@@ -77,24 +78,24 @@ const ProductForm = ({ product }) => {
   }
 
   const handleAddToWishlist = async (e) => {
-    
     try {
       if (user === null) {
         navigate('/user')
-      }
-      else {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/user/wishlist/${user._id}/${product._id}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      const wishlist = await response.json()
-      dispatch(setWishlist({ wishList: wishlist }))
+      } else {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}/user/wishlist/${user._id}/${
+            product._id
+          }`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        const wishlist = await response.json()
+        dispatch(setWishlist({ wishList: wishlist }))
       }
     } catch (error) {
       console.log(error)
@@ -203,8 +204,6 @@ const ProductForm = ({ product }) => {
       </form>
     </div>
   )
-
 }
 
 export default ProductForm
-
