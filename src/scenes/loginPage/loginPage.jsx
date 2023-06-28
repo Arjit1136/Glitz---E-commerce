@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 export const LoginPage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [message, setMessage] = useState()
   const [isUser, setIsUser] = useState(false)
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({
@@ -29,6 +30,7 @@ export const LoginPage = () => {
 
   const handleChange = (e) => {
     if (isUser) setIsUser(false)
+    if(message) setMessage()
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
@@ -52,15 +54,19 @@ export const LoginPage = () => {
       })
 
       const loggedIn = await response.json()
-
+      console.log(loggedIn)
       if (isLogin) {
-        dispatch(
-          setLogin({
-            user: loggedIn.newUser,
-            token: loggedIn.token,
-          })
-        )
-        navigate('/')
+        if (loggedIn.msg) {
+          setMessage(loggedIn.msg)
+        } else {
+          dispatch(
+            setLogin({
+              user: loggedIn.newUser,
+              token: loggedIn.token,
+            })
+          )
+          navigate(-1)
+        }
       } else {
         if (loggedIn?.isUser) {
           setIsUser(true)
@@ -85,10 +91,18 @@ export const LoginPage = () => {
           <h1 className="text-center text-[2.5rem] font-lobster pb-5">
             {isLogin ? 'Login' : 'Register'}
           </h1>
-          {!isLogin && isUser && (
+          {!isLogin &&
+            isUser(
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-[0.7rem]">
+                <span className="block sm:inline">
+                  User already exists. Please choose a different email.
+                </span>
+              </div>
+            )}
+          {isLogin && message && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-[0.7rem]">
               <span className="block sm:inline">
-                User already exists. Please choose a different email.
+                {message}
               </span>
             </div>
           )}
@@ -213,7 +227,11 @@ export const LoginPage = () => {
                   Phone Number:
                 </label>
                 <div className="flex items-center border rounded-md">
-                  <img src="/Navbar/phone.png" alt="phone" className="h-6 px-3" />
+                  <img
+                    src="/Navbar/phone.png"
+                    alt="phone"
+                    className="h-6 px-3"
+                  />
                   <input
                     type="text"
                     id="phoneNumber"
