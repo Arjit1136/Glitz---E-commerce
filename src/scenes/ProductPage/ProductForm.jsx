@@ -13,21 +13,17 @@ const ProductForm = ({ product }) => {
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
   const token = useSelector((state) => state.token)
-  const wishlist = user?.wishList || []
-  const inWishlist = wishlist.some((item) => item === product._id)
-  const [inCart, setInCart] = useState(false)
+  const inWishlist = user?.wishlist.some((item) => item === product._id) || false
+  // const [inCart, setInCart] = useState(false)
 
-  useEffect(() => {
-    const cart = user?.cart || []
-    
-    const inCart = cart.some(
+ 
+    const inCart = user?.cart.some(
       (item) =>
         item.productId === product._id &&
         item.size === size.toLowerCase() && // Convert size to lowercase
         item.quantity === quantity
-    )
-    setInCart(inCart)
-  }, [size, quantity, product._id])
+    ) || false
+    
 
   useEffect(() => {
     const updateOptions = () => {
@@ -50,11 +46,14 @@ const ProductForm = ({ product }) => {
 
   const handleAddToCart = async () => {
     try {
-      if (inCart) {
+      if(user===null){
+        navigate('/user')
+      }
+      else if (inCart) {
         navigate(`/user/cart/${user._id}`)
       } else {
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/user/cart/add/${user._id}/${product._id}`,
+          `${import.meta.env.VITE_BASE_URL}/user/cart/add/${user?._id}/${product._id}`,
           {
             method: 'PATCH',
             headers: {
@@ -78,8 +77,12 @@ const ProductForm = ({ product }) => {
   }
 
   const handleAddToWishlist = async (e) => {
-    e.preventDefault()
+    
     try {
+      if (user === null) {
+        navigate('/user')
+      }
+      else {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/user/wishlist/${user._id}/${product._id}`,
         {
@@ -92,6 +95,7 @@ const ProductForm = ({ product }) => {
       )
       const wishlist = await response.json()
       dispatch(setWishlist({ wishList: wishlist }))
+      }
     } catch (error) {
       console.log(error)
     }
