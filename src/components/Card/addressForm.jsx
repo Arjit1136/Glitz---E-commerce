@@ -54,7 +54,7 @@ export const AddressForm = (props) => {
     <div className="address-form  max-w-md bg-white shadow-md rounded px-4 py-3 ">
       <div className="flex justify-between items-center  mb-4">
         <h2 className="text-2xl">Enter Address</h2>
-        <button>
+        <button onClick={()=>{props.onHandleAddressForm()}}>
           <img src="/Navbar/erase.png" alt="X" className="w-[1.2rem]" />
         </button>
       </div>
